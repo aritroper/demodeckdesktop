@@ -1,38 +1,348 @@
-.App {
-  text-align: center;
+body {
+    background-color: black;
+    color: white;
+    margin: 0;       /* Resets default margin */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial; /* Optional: sets a default font */
+    -webkit-font-smoothing: antialiased; /* Optional: smooths the font on the page */
+    -moz-osx-font-smoothing: grayscale;  /* Optional: smooths the font on the page */
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.album-container {
+    background-color: #121212;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: white; /* for the text color */
+    border-radius: 12px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.tracks-container {
+    background-color: black;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: white; /* for the text color */
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.tracks-list {
+    width: 100%;
 }
 
-.App-link {
-  color: #61dafb;
+.track-item {
+    display: flex;          /* Layout children (track number and track info) in a row */
+    align-items: center;    /* Vertically center children */
+    padding: 10px 0;        /* Some vertical padding for spacing between tracks */
+    border-radius: 5px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.track-name.selected {
+    color: #3688DA; /* Or any color you'd like to use for highlighting */
+}
+
+.track-item:hover {
+    background-color: #232323;
+}
+
+.tab-content {
+    padding-top: 20px;
+}
+
+
+.track-number {
+    width: 30px;   /* Fixed width for the track number */
+    text-align: right;  /* Align number to the right of its container */
+    margin-right: 10px; /* Some spacing between the number and the track info */
+}
+
+.track-info {
+    flex: 1;  /* Take the remaining width */
+    display: flex;
+    flex-direction: column;  /* Stack the track name and duration vertically */
+    justify-content: center; /* Vertically center the name and duration */
+}
+
+.track-name {
+    font-size: 16px; /* Adjust as needed */
+}
+
+.track-duration {
+    font-size: 14px; /* Adjust as needed */
+    color: #777;     /* A muted color for the duration */
+}
+
+.albums-list {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background-color: #121212;
+    display: flex;
+    flex-direction: column;
+    align-items: center;  /* This will horizontally center the child elements */
+    border-radius: 12px;
+    gap: 10px; /* Adds space between each album cover */
+}
+
+.album-item {
+    width: 80px; /* Ensure it's less than 100% to observe centering */
+    text-align: center; /* To ensure the image inside is centered if it doesn't take full width */
+}
+
+.album-item img {
+    border-radius: 10px;
+    max-width: 100%;  /* Ensures the image doesn't overflow its container */
+    cursor: pointer;
+}
+  
+.album-image {
+    border-radius: 15px;
+    width: 300px;
+    margin-bottom: 20px;
+}
+  
+.album-info {
+    width: 100%; /* To make sure the text container takes full width of the parent */
+    text-align: left; /* Align text to the left */
+}
+
+.album-name {
+    font-size: 24px; /* Adjust as needed */
+    font-weight: 600;
+}
+
+.track-count {
+    font-size: 14px; /* Adjust as needed */
+    opacity: 0.6; /* Less opacity; adjust as desired */
+    /* Any other styles specific to the track count */
+}
+
+.app-container {
+    display: flex;
+    flex: 1
+}
+
+.app-wrapper {
+    display: flex;
+    flex-direction: column; /* Stack children vertically */
+    min-height: 100vh;      /* Take up full viewport height */
+}
+
+.albums-section {
+    width: 100px;
+    overflow-y: auto; /* in case the albums list gets too long */
+    padding: 10px;
+}
+
+.art-section {
+    display: flex;
+    flex-direction: column;  /* This ensures children are stacked vertically */
+    align-items: flex-start; /* centers the album art */
+    background-color: black; /* as you mentioned you want a black background */
+    color: white; /* for the text color */
+    padding: 10px;
+}
+
+.edit-project-section {
+    flex: 1; /* take 1/3 of the space */
+    overflow-y: auto; /* in case the tracks list gets too long */
+    padding: 10px;
+}
+
+.activity-list {
+    padding-top: 10px;
+    list-style-type: none;
+    padding-left: 0;
+    margin-top: 0;
+}
+
+.activity-item {
+    border-radius: 10px;
+    background-color: #121212;
+    display: flex;
+    align-items: center; /* Vertically center the content */
+    margin-bottom: 10px; /* Some spacing between items */
+}
+
+.profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%; /* Make it circular */
+    margin-right: 10px; /* Space between the image and the text */
+}
+
+.activity-text {
+    flex: 1; /* Allow the text to take up remaining space */
+    word-wrap: break-word; /* Break words if they are too long */
+}
+
+.tab-bar {
+    height: 40px;
+    display: flex;
+    justify-content: space-around;
+    background-color: #121212;
+    border-radius: 15px;
+    padding: 10px 0;
+}
+
+.tab-bar button {
+    width: 130px;
+    background-color: transparent;
+    border-radius: 10px;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 14px; /* Set this to your desired size */
+}
+
+.tab-bar button:hover {
+    background-color: #555;
+}
+
+.tab-bar button.active {
+    background-color: #3688DA; /* Blue background for the active state */
+}
+
+
+
+.player {
+    width: 100%;
+    height: 80px; /* Adjust as necessary */
+    position: fixed;       /* Make it fixed to the viewport */
+    bottom: 0;             /* Pin it to the bottom */
+    left: 0;
+    width: 100%;
+    background-color: #121212; /* Dark background color */
+    color: white; /* Text color */
+    display: flex;
+    align-items: center;
+    padding: 0 20px; /* Some horizontal padding */
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1); /* Optional shadow for depth */
+}
+
+.player-left {
+    display: flex;
+    align-items: center;
+}
+
+.player-art {
+    width: 50px; /* Adjust based on your preference */
+    height: 50px;
+    margin-right: 10px;
+    border-radius: 8px;
+}
+
+.player-info .track-name {
+    font-size: 18px;
+}
+
+.player-info .artist-name {
+    font-size: 14px;
+    opacity: 0.7; /* Slightly faded to differentiate from track name */
+}
+
+.player-center {
+    flex: 1; /* To take the remaining space in the player */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.scrub-bar {
+    width: 80%; /* Adjust as desired */
+    height: 4px;
+    background-color: #555; /* Adjust based on your design */
+    margin: 10px 0; /* Some spacing */
+}
+
+.controls {
+    display: flex;
+    gap: 20px; /* Space between controls */
+}
+
+.menu-bar {
+    background-color: #121212;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column; /* Stack the children vertically */
+    padding: 10px;
+    gap: 10px; /* Space between buttons */
+    margin-bottom: 20px; 
+}
+
+.menu-button {
+    width: 80px; /* Width is 80% of the viewport width */
+    height: 50px;
+    position: relative; /* Required to position content inside */
+
+    /* The following styles help center the button content */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    /* Any other button styles you want */
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.popup-content {
+    background: #232323;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 400px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.popup-content ul {
+    list-style-type: none; /* Removes bullet points */
+    padding: 0;            /* Removes default padding */
+    margin: 0;             /* Removes default margin */
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+}
+
+.artist-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    cursor: pointer;
+    transition: background 0.3s;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.artist-item:hover {
+    background: #151515;
+}
+
+.artist-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%; /* Makes the image circular */
+    margin-right: 10px;
+    background-color: white;
+}
+.artist-name {
+    font-size: 16px;
 }
