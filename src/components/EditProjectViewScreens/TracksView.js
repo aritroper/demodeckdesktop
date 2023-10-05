@@ -1,25 +1,23 @@
 import React, { useState, useEffect } from 'react';
 
-const TracksView = ({ album, onSelectTrack }) => {
+const TracksView = ({ project, currentTrack, setCurrentTrack }) => {
     const [tracks, setTracks] = useState([]);
-    const [selectedTrack, setSelectedTrack] = useState(null);
 
     useEffect(() => {
         const fetchTracks = async () => {
             try {
-                const tracksFromAlbum = await album.getSnapshotOfTracks();
-                setTracks(tracksFromAlbum);
+                const tracksFromProject = await project.getSnapshotOfTracks();
+                setTracks(tracksFromProject);
             } catch (error) {
                 console.error("Error fetching tracks:", error);
             }
         };
 
         fetchTracks();
-    }, [album]); // Only use the album as a dependency
+    }, [project]); // Only use the project as a dependency
 
     const handleTrackClick = track => {
-        onSelectTrack(track);
-        setSelectedTrack(track.id); // set the clicked track ID to the selectedTrack state
+        setCurrentTrack(track);
     };
 
     return (
@@ -32,7 +30,7 @@ const TracksView = ({ album, onSelectTrack }) => {
                 >
                     <div className="track-number">{index + 1}.</div>
                     <div className="track-info">
-                        <div className={`track-name ${track.id === selectedTrack ? 'selected' : ''}`}>
+                        <div className={`track-name ${track.id === currentTrack?.id ? 'selected' : ''}`}>
                             {track.name}
                         </div>
                         <div className="track-duration">{track.duration}</div>

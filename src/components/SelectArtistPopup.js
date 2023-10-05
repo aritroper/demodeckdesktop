@@ -20,7 +20,7 @@ const SelectArtistPopup = ({ onSelect, onClose }) => {
             const resolvedArtists = await Promise.all(artistPromises);
             setArtists(resolvedArtists);
         } catch (error) {
-            console.error("Error fetching albums:", error);
+            console.error("Error fetching projects:", error);
         }
     };
 

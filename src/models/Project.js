@@ -4,10 +4,10 @@ import Helpers from '../Helpers';
 
 class Project {
     // Constructor that initializes the properties of the project
-    constructor(id, artistId, title, imageUrl, numberOfTracks, duration) {
+    constructor(id, artistId, name, imageUrl, numberOfTracks, duration) {
         this.id = id;
         this.artistId = artistId;
-        this.title = title;             // The title of the project
+        this.name = name;               // The name of the project
         this.imageUrl = imageUrl;       // The URL of the project's image
         this.numberOfTracks = numberOfTracks; // The number of tracks in the project
         this.duration = duration;
@@ -15,7 +15,7 @@ class Project {
 
     // Method to display the project's details (this is optional, but might be useful)
     displayDetails() {
-        console.log(`Title: ${this.title}`);
+        console.log(`Title: ${this.name}`);
         console.log(`Image URL: ${this.imageUrl}`);
         console.log(`Number of Tracks: ${this.numberOfTracks}`);
     }
@@ -37,9 +37,11 @@ class Project {
                 key, 
                 metadata.name, 
                 Helpers.formatDuration(currentRevision.duration), 
-                currentRevision["remote url"]
+                currentRevision["remote url"],
+                metadata["order weight"],
+                this
             );
-        });
+        }).sort((a, b) => a.orderWeight > b.orderWeight);
     }
 }
 

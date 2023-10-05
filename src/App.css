@@ -7,14 +7,14 @@ body {
     -moz-osx-font-smoothing: grayscale;  /* Optional: smooths the font on the page */
 }
 
-.album-container {
+.project-container {
     background-color: #121212;
     padding: 30px;
     display: flex;
     flex-direction: column;
-    align-items: center;
     color: white; /* for the text color */
     border-radius: 12px;
+    position: relative; /* to allow absolute positioning of play button */
 }
 
 .tracks-container {
@@ -46,7 +46,7 @@ body {
 }
 
 .tab-content {
-    padding-top: 20px;
+    margin-top: 20px;
 }
 
 
@@ -72,23 +72,23 @@ body {
     color: #777;     /* A muted color for the duration */
 }
 
-.albums-list {
-    padding-top: 10px;
-    padding-bottom: 10px;
+.projects-list {
+    padding-top: 5px;
+    padding-bottom: 5px;
     background-color: #121212;
     display: flex;
     flex-direction: column;
     align-items: center;  /* This will horizontally center the child elements */
     border-radius: 12px;
-    gap: 10px; /* Adds space between each album cover */
+    gap: 10px; /* Adds space between each project cover */
 }
 
-.album-item {
+.project-item {
     width: 80px; /* Ensure it's less than 100% to observe centering */
     text-align: center; /* To ensure the image inside is centered if it doesn't take full width */
 }
 
-.album-item img {
+.project-item img {
     border-radius: 10px;
     max-width: 100%;  /* Ensures the image doesn't overflow its container */
     cursor: pointer;
@@ -100,12 +100,28 @@ body {
     margin-bottom: 20px;
 }
   
-.album-info {
-    width: 100%; /* To make sure the text container takes full width of the parent */
-    text-align: left; /* Align text to the left */
+.project-info {
+    display: flex;
+    justify-content: space-between; /* this will push items to either end of the container */
+    align-items: center; /* this will vertically center align items */
 }
 
-.album-name {
+.play-button {
+    background-color:white;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.play-button:hover {
+    background: #333;
+}
+
+.project-name {
     font-size: 24px; /* Adjust as needed */
     font-weight: 600;
 }
@@ -127,16 +143,16 @@ body {
     min-height: 100vh;      /* Take up full viewport height */
 }
 
-.albums-section {
+.projects-section {
     width: 100px;
-    overflow-y: auto; /* in case the albums list gets too long */
+    overflow-y: auto; /* in case the projects list gets too long */
     padding: 10px;
 }
 
 .art-section {
     display: flex;
     flex-direction: column;  /* This ensures children are stacked vertically */
-    align-items: flex-start; /* centers the album art */
+    align-items: flex-start; /* centers the project art */
     background-color: black; /* as you mentioned you want a black background */
     color: white; /* for the text color */
     padding: 10px;
@@ -204,11 +220,9 @@ body {
     background-color: #3688DA; /* Blue background for the active state */
 }
 
-
-
 .player {
     width: 100%;
-    height: 80px; /* Adjust as necessary */
+    height: 80px;          /* Adjust as necessary */
     position: fixed;       /* Make it fixed to the viewport */
     bottom: 0;             /* Pin it to the bottom */
     left: 0;
@@ -221,6 +235,20 @@ body {
     box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1); /* Optional shadow for depth */
 }
 
+.play-pause {
+    width: 35px;
+    height: 35px;
+    color: black;
+    border-radius: 50%;
+    border: none;
+    background-color: white;
+}
+
+.play-pause:hover {
+    width: 37px;
+    height: 37px;
+}
+
 .player-left {
     display: flex;
     align-items: center;
@@ -231,6 +259,12 @@ body {
     height: 50px;
     margin-right: 10px;
     border-radius: 8px;
+}
+
+.player-info {
+    display: flex;
+    flex-direction: column;
+    margin-left: 10px;
 }
 
 .player-info .track-name {
@@ -250,14 +284,37 @@ body {
 }
 
 .scrub-bar {
-    width: 80%; /* Adjust as desired */
+    width: 40%; /* Adjust as desired */
     height: 4px;
     background-color: #555; /* Adjust based on your design */
     margin: 10px 0; /* Some spacing */
+    border-radius: 12px;
+}
+
+.progress {
+    height: 100%;
+    background-color: white; /* Or any desired color */
+    border-radius: 12px;
+}
+
+.project-play-btn {
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    border: none;
+    background-color: #3688DA;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.project-play-btn:hover {
+    background-color: #4a9def;
 }
 
 .controls {
     display: flex;
+    margin-top: 10px;
+    align-items: center;
     gap: 20px; /* Space between controls */
 }
 

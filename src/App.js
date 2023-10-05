@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import MenuBar from './components/MenuBar'
-import AlbumsList from './components/AlbumList';
+import ProjectsList from './components/ProjectList';
 import AlbumArt from './components/AlbumArt';
 import EditProjectView from './components/EditProjectView';
 import ProjectActivity from './components/ProjectActivity';
@@ -11,7 +11,7 @@ import SelectArtistPopup from './components/SelectArtistPopup';
 function App() {
     const [isPopupVisible, setIsPopupVisible] = useState(false);
     const [selectedArtist, setSelectedArtist] = useState(null);
-    const [selectedAlbum, setSelectedAlbum] = useState(null);
+    const [selectedProject, setSelectedProject] = useState(null);
     const [currentTrack, setCurrentTrack] = useState(null);
     const [loggedIn, setLoggedIn] = useState(false);
 
@@ -36,23 +36,31 @@ function App() {
                     onClose={() => setIsPopupVisible(false)}
                 />}
 
-                <div className="albums-section">
+                <div className="projects-section">
                     <MenuBar 
                         onLogOut={() => {/* Handle logout logic */}}
                         onSearch={() => {/* Handle search logic */}}
                         onMyArtist={() => { setIsPopupVisible(true) }}
                     />
-                    <AlbumsList artist={selectedArtist} onSelect={setSelectedAlbum} />
+                    <ProjectsList artist={selectedArtist} onSelect={setSelectedProject} />
                 </div>
                 <div className="art-section">
-                    <AlbumArt album={selectedAlbum} />
-                    <ProjectActivity album={selectedAlbum} />
+                    <AlbumArt project={selectedProject} />
+                    <ProjectActivity project={selectedProject} />
                 </div>
                 <div className="edit-project-section">
-                    <EditProjectView album={selectedAlbum} onSelectTrack={setCurrentTrack} />
+                    <EditProjectView 
+                        project={selectedProject} 
+                        currentTrack={currentTrack} 
+                        setCurrentTrack={setCurrentTrack} 
+                    />
                 </div>
             </div>
-            <Player currentTrack={currentTrack} currentAlbum={selectedAlbum} /> 
+            <Player 
+                project={selectedProject} 
+                currentTrack={currentTrack} 
+                setCurrentTrack={setCurrentTrack} 
+            /> 
         </div>
     );
 }

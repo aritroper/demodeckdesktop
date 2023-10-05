@@ -4,25 +4,29 @@ import ArtView from './EditProjectViewScreens/ArtView';
 import LyricsView from './EditProjectViewScreens/LyricsView';
 import IdeasView from './EditProjectViewScreens/IdeasView';
 
-const EditProjectView = ({ album, onSelectTrack }) => {
+const EditProjectView = ({ project, currentTrack, setCurrentTrack }) => {
     const [selectedTab, setSelectedTab] = useState('tracks');
 
     let content;
     switch (selectedTab) {
         case 'tracks':
-            content = <TracksView album={album} onSelectTrack={onSelectTrack} />;
+            content = <TracksView 
+              project={project} 
+              currentTrack={currentTrack} 
+              setCurrentTrack={setCurrentTrack} 
+            />;
             break;
         case 'lyrics':
-            content = <LyricsView album={album} />;
+            content = <LyricsView project={project} />;
             break;
         case 'art':
-            content = <ArtView album={album} />;
+            content = <ArtView project={project} />;
             break;
         case 'ideas':
-            content = <IdeasView album={album} />;
+            content = <IdeasView project={project} />;
             break;
         default:
-            content = <TracksView album={album} />;
+            content = <TracksView project={project} />;
             break;
     }
 

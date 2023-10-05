@@ -1,7 +1,7 @@
 import React from 'react';
 
-const ProjectActivity = ({ album }) => {
-    if (!album) return null;
+const ProjectActivity = ({ project }) => {
+    if (!project) return null;
 
     const activities = [
         { 

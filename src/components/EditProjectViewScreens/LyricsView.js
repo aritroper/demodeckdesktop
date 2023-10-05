@@ -1,6 +1,6 @@
 import React from 'react';
 
-const LyricsView = ({ album }) => {
+const LyricsView = ({ project }) => {
     // Sample data or fetch from a backend/API
     const lyrics = "Here are the lyrics for the selected track...";
 

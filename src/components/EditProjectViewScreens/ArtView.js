@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ArtView = ({ album }) => {
+const ArtView = ({ project }) => {
     const imageUrl = 'https://placeimg.com/640/480/music'; // Placeholder or fetch from a backend/API
 
     return (

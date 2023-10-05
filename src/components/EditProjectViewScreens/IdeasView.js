@@ -1,6 +1,6 @@
 import React from 'react';
 
-const IdeasView = ({ album }) => {
+const IdeasView = ({ project }) => {
     // Sample data or fetch from a backend/API
     const ideas = [
         "Idea 1: Enhance the chorus.",
