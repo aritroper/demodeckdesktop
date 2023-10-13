@@ -15,6 +15,9 @@ const config = {
     measurementId: "G-MCVFRSVWMN"
   };
 
+firebase.initializeApp({
+  databaseURL:  "https://demodeck-deleted-data.firebaseio.com",
+}, 'deletedData');
 firebase.initializeApp(config);
 
 export default firebase;

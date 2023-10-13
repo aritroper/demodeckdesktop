@@ -1,5 +1,7 @@
 
 class Helpers {
+    static deletedDataURL = "https://demodeck-deleted-data.firebaseio.com";
+
     static formatDuration(seconds) {
         // Convert the total seconds into whole minutes and remaining seconds
         let minutes = Math.floor(seconds / 60);

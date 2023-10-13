@@ -28,6 +28,7 @@ body {
 
 .tracks-list {
     width: 100%;
+    transition: all 0.3s ease-in-out;
 }
 
 .track-item {
@@ -48,7 +49,6 @@ body {
 .tab-content {
     margin-top: 20px;
 }
-
 
 .track-number {
     width: 30px;   /* Fixed width for the track number */
@@ -117,6 +117,23 @@ body {
     justify-content: center;
 }
 
+.artist-circle {
+    width: 44px;  /* Adjust size as needed */
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;  /* Makes it circular */
+    background-color: #232323;  /* Adjust color as needed */
+    color: white;
+    font-size: 15px;  /* Adjust font-size as needed */
+}
+
+.artist-circle:hover {
+    background-color: #333;
+    transition: background-color 0.3s ease;
+}
+
 .play-button:hover {
     background: #333;
 }
@@ -124,10 +141,11 @@ body {
 .project-name {
     font-size: 24px; /* Adjust as needed */
     font-weight: 600;
+    width: 235px;
 }
 
 .track-count {
-    font-size: 14px; /* Adjust as needed */
+    font-size: 15px; /* Adjust as needed */
     opacity: 0.6; /* Less opacity; adjust as desired */
     /* Any other styles specific to the track count */
 }
@@ -164,7 +182,30 @@ body {
     padding: 10px;
 }
 
+.tracks-list.dragging {
+    border-radius: 10px;
+    background: #232323;
+    transition: background-color 0.1s ease;
+}
+
+.dropzone-prompt {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    font-weight: 500;
+    color: #333;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 10px 20px;
+    border-radius: 20px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    font-size: 1.1rem;
+    border: 1px solid rgba(10, 10, 10, 0.1);
+}
+
 .activity-list {
+    width: 360px;
     padding-top: 10px;
     list-style-type: none;
     padding-left: 0;
@@ -172,6 +213,7 @@ body {
 }
 
 .activity-item {
+    padding:10px;
     border-radius: 10px;
     background-color: #121212;
     display: flex;
@@ -179,7 +221,12 @@ body {
     margin-bottom: 10px; /* Some spacing between items */
 }
 
-.profile-pic {
+.activity-profile-pic {
+    display: flex; /* Converts the container into a flex container */
+    align-items: center; /* Vertically aligns child items in the center */
+    justify-content: center; /* Horizontally aligns child items in the center */
+
+    background-color: #232323;
     width: 40px;
     height: 40px;
     border-radius: 50%; /* Make it circular */
@@ -284,17 +331,60 @@ body {
 }
 
 .scrub-bar {
-    width: 40%; /* Adjust as desired */
+    display: flex;
+    align-items: center;
+    width: 40%;
+}
+
+.scrub-bar-controls {
+    width: 100%; /* Adjust as desired */
     height: 4px;
     background-color: #555; /* Adjust based on your design */
     margin: 10px 0; /* Some spacing */
     border-radius: 12px;
+    position: relative;
 }
 
 .progress {
     height: 100%;
     background-color: white; /* Or any desired color */
     border-radius: 12px;
+}
+
+.seeker {
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+    height: 2px;
+}
+
+.seeker::-webkit-slider-thumb {
+    appearance: none;
+    width: 13px;
+    height: 13px;
+    background: #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-top: -4px; 
+}
+
+.time-label {
+    font-size: 12px;
+    margin: 0 5px;
+    color: white;
+    opacity: 0.6;
+}
+
+.seeker::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: #fff;
+    border-radius: 50%;
+    cursor: pointer;
 }
 
 .project-play-btn {
@@ -309,6 +399,7 @@ body {
 
 .project-play-btn:hover {
     background-color: #4a9def;
+    transition: background-color 0.3s ease;
 }
 
 .controls {

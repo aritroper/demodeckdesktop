@@ -1,28 +1,39 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 const ProjectActivity = ({ project }) => {
-    if (!project) return null;
+    const [activity, setActivity] = useState([]);
+    const [activityLabels, setActivityLabels] = useState({}); // Stores labels by activity id
 
-    const activities = [
-        { 
-            id: '1', 
-            activity: 'Track "Song A" uploaded on Sep 20, 2023', 
-            profilePic: 'https://tinyurl.com/3ctz9nwu' 
-        },
-        { 
-            id: '2', 
-            activity: 'Track "Song B" uploaded on Sep 21, 2023', 
-            profilePic: 'https://tinyurl.com/yk6vvkcw' 
-        },
-        // ... add more activities
-    ];
+    useEffect(() => {
+        const fetchActivity = async () => {
+            try {
+                const projectActivity = await project.getSnapshotOfActivity(5);
+                setActivity(projectActivity);
+                
+                // Fetch labels for each activity
+                const labels = {};
+                for (let act of projectActivity) {
+                    labels[act.id] = await act.getLabel();
+                }
+                setActivityLabels(labels);
+            } catch (error) {
+                console.error("Error fetching activity:", error);
+            }
+        };
+
+        fetchActivity();
+    }, [project]);
+
+    if (!project) return null;
 
     return (
         <ul className="activity-list">
-            {activities.map(activity => (
+            {activity.map(activity => (
                 <li key={activity.id} className="activity-item">
-                    <img src={activity.profilePic} alt="Profile" className="profile-pic"/>
-                    <span className="activity-text">{activity.activity}</span>
+                     <div className="activity-profile-pic">
+                        {activity.senderName.split(' ').map(word => word[0]).join('')}
+                     </div>
+                    <span className="activity-text">{activityLabels[activity.id]}</span>
                 </li>
             ))}
         </ul>

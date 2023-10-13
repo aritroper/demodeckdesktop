@@ -14,6 +14,7 @@ function App() {
     const [selectedProject, setSelectedProject] = useState(null);
     const [currentTrack, setCurrentTrack] = useState(null);
     const [loggedIn, setLoggedIn] = useState(false);
+    const [playProject, setPlayProject] = useState(false);
 
     const handleLoginSuccess = () => {
         setLoggedIn(true);
@@ -41,11 +42,15 @@ function App() {
                         onLogOut={() => {/* Handle logout logic */}}
                         onSearch={() => {/* Handle search logic */}}
                         onMyArtist={() => { setIsPopupVisible(true) }}
+                        selectedArtist={selectedArtist}
                     />
                     <ProjectsList artist={selectedArtist} onSelect={setSelectedProject} />
                 </div>
                 <div className="art-section">
-                    <AlbumArt project={selectedProject} />
+                    <AlbumArt 
+                        project={selectedProject} 
+                        setPlayProject={setPlayProject}
+                    />
                     <ProjectActivity project={selectedProject} />
                 </div>
                 <div className="edit-project-section">
@@ -60,6 +65,7 @@ function App() {
                 project={selectedProject} 
                 currentTrack={currentTrack} 
                 setCurrentTrack={setCurrentTrack} 
+                playProject={playProject} 
             /> 
         </div>
     );

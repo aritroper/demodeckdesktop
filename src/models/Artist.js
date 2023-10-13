@@ -1,12 +1,11 @@
 import firebase from '../firebaseConfig';
 import Project from '../models/Project';
-import Helpers from '../Helpers';
 
 class Artist {
     // Constructor that initializes the properties of the artist
     constructor(id, name) {
         this.id = id;
-        this.name = name; 
+        this.name = name || "Unnamed Artist"; 
     }
 
     static async getArtistById(artistId) {
@@ -14,6 +13,27 @@ class Artist {
             .ref("artists").child(artistId).once("value");
         const artist = snapshot.val();
         return new Artist(artistId, artist.metadata.name);
+    }
+
+    /**
+     * Returns the initials of the artist name. 
+     * Each word's first character is taken to form the initials.
+     * 
+     * @param {string} name - The full name from which to derive the initials.
+     * @returns {string} The initials derived from the name, in uppercase.
+     * 
+     * @example
+     * // returns "JD"
+     * getInitials("John Doe");
+     * 
+     * @example
+     * // returns "ABC"
+     * getInitials("Alice Bob Charlie");
+     */
+    getInitials() {
+        const words = this.name.split(' ');
+        const initials = words.map(word => word.charAt(0)).join('');
+        return initials.toUpperCase();
     }
 
     async getSnapshotOfProjects() {
@@ -32,7 +52,9 @@ class Artist {
                     metadata.name,
                     albumArtURL,
                     metadata["track count"],
-                    Helpers.formatDuration(metadata["duration"]));
+                    metadata["duration"],
+                    this,
+                );
             } else {
                 return new Project(
                     key,
@@ -40,7 +62,9 @@ class Artist {
                     metadata.name,
                     null,
                     metadata["track count"],
-                    Helpers.formatDuration(metadata["duration"]));
+                    metadata["duration"],
+                    this,
+                );
             }
         }));
     }
