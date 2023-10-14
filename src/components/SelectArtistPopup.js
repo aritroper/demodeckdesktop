@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Artist from '../models/Artist';
 import firebase from '../firebaseConfig';
 
-const SelectArtistPopup = ({ onSelect, onClose }) => {
+const SelectArtistPopup = ({ onSelect, onClose, isActive }) => {
     const [artists, setArtists] = useState([]);
     const [refresh, setRefresh] = useState(true); 
 
@@ -32,14 +32,14 @@ const SelectArtistPopup = ({ onSelect, onClose }) => {
     }, [refresh]);
 
     return (
-        <div className="popup">
+        <div className={`popup ${isActive ? 'active' : ''}`}>
             <div className="popup-content">
                 <button className="close" onClick={onClose}>X</button>
                 <h3>Change Artist</h3>
                 <ul>
                     {artists.map(artist => (
                         <li key={artist.id} className="artist-item" onClick={() => onSelect(artist)}>
-                            <div className="artist-image" />
+                            <div className="artist-circle-2">{artist.getInitials()}</div>
                             <span className="artist-name">{artist.name}</span>
                         </li>
                     ))}

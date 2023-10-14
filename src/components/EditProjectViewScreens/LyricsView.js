@@ -2,12 +2,10 @@ import React from 'react';
 
 const LyricsView = ({ project }) => {
     // Sample data or fetch from a backend/API
-    const lyrics = "Here are the lyrics for the selected track...";
 
     return (
         <div>
-            <h2>Lyrics</h2>
-            <pre>{lyrics}</pre>
+            <h2>We're Still Working on This</h2>
         </div>
     );
 };

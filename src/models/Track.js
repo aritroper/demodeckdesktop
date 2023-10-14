@@ -2,13 +2,14 @@ import firebase from '../firebaseConfig';
 import Project from './Project';
 
 class Track {
-    constructor(id, currRevId, name, duration, audioUrl, orderWeight, project) {
+    constructor(id, currRevId, name, duration, audioUrl, orderWeight, isLocked, project) {
         this.id = id;
         this.currRevId = currRevId;
         this.name = name || "Untitled";
         this.duration = duration;
         this.audioUrl = audioUrl;
         this.orderWeight = orderWeight;
+        this.isLocked = isLocked;
         this.project = project;
     }
 
@@ -43,6 +44,7 @@ class Track {
             currentRevision.duration,
             currentRevision["remote url"],
             metadata["order weight"],
+            metadata["locked"] === true ? true : false,
             project
         );
     }

@@ -38,6 +38,10 @@ const ProjectList = ({ artist, onSelect }) => {
                         onLoad={handleImageLoad}
                         style={{ opacity: 0, transition: 'opacity 0.5s', backgroundColor: 'gray' }}
                     />
+                    <div className="tooltip">
+                        <div className="tooltip-title">{project.name}</div>
+                        <div className="tooltip-description">{project.numberOfTracks} tracks</div>
+                    </div>
                 </div>
             ))}
         </div>

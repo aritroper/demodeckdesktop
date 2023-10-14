@@ -3,7 +3,7 @@ import firebase from '../firebaseConfig';
 import Track from './Track';
 
 class TrackFile {
-    constructor(file, projectId, artistId) {
+    constructor(file, project) {
         this.trackId = uuid.v4();
         this.revId = uuid.v4();
         this.file = file;
@@ -19,31 +19,30 @@ class TrackFile {
         this.fileType = file.name.substring(file.name.lastIndexOf('.') + 1);
         this.size = file.size;
         this.lastModified = file.lastModified;
-        this.projectId = projectId;
-        this.artistId = artistId;
+        this.project = project;
         this.uploadingProgress = 0;
     }
 
     async asTrack() {
-        return this.getDuration().then((duration) => {
-            return new Track(
-                this.trackId, 
-                this.revId, 
-                this.name, 
-                duration, 
-                null, 
-                10, 
-                null
-            )
-        });
+        const duration = await this.getDuration();
+        return new Track(
+            this.trackId, 
+            this.revId, 
+            this.name, 
+            duration, 
+            this.fileURL, 
+            10, 
+            false,
+            this.project
+        )
     }
 
     // Generates the track metadata for uploading
     async getTrackMetadata() {
         return this.getDuration().then((duration) => {
             var data = {
-                artistId: this.artistId,
-                projectId: this.projectId,
+                artistId: this.project.artist.id,
+                projectId: this.project.id,
                 lastModified: this.lastModified,
                 revId: this.revId,
                 name: this.name,
@@ -65,10 +64,6 @@ class TrackFile {
             
             audioElement.addEventListener("loadedmetadata", function() {
                 const duration = audioElement.duration;
-
-                // Release the object URL to free memory
-                URL.revokeObjectURL(this.fileURL);
-
                 resolve(duration);
             });
 
@@ -114,7 +109,8 @@ class TrackFile {
             var downloadURL = response[0];
             var metadata = response[1];
             metadata["revisions"][this.revId]["metadata"]["remote url"] = downloadURL; // Set the storage URL
-            return firebase.database().ref("artists").child(this.artistId).child("projects").child(this.projectId).child("tracks").child(this.trackId).set(metadata);
+            return firebase.database().ref("artists").child(this.project.artist.id).child("projects")
+                .child(this.project.id).child("tracks").child(this.trackId).set(metadata);
         }).catch((err) => {
             alert("Please upgrade your storage plan from the Demodeck app.")
             console.error(err);

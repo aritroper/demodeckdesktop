@@ -4,7 +4,7 @@ import ArtView from './EditProjectViewScreens/ArtView';
 import LyricsView from './EditProjectViewScreens/LyricsView';
 import IdeasView from './EditProjectViewScreens/IdeasView';
 
-const EditProjectView = ({ project, currentTrack, setCurrentTrack }) => {
+const EditProjectView = ({ project, tracks, setTracks, currentTrack, setCurrentTrack }) => {
     const [selectedTab, setSelectedTab] = useState('tracks');
 
     let content;
@@ -12,6 +12,8 @@ const EditProjectView = ({ project, currentTrack, setCurrentTrack }) => {
         case 'tracks':
             content = <TracksView 
               project={project} 
+              tracks={tracks}
+              setTracks={setTracks}
               currentTrack={currentTrack} 
               setCurrentTrack={setCurrentTrack} 
             />;

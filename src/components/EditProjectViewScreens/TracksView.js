@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Helpers from '../../Helpers';
 import TrackFile from '../../models/TrackFile';
 
-const TracksView = ({ project, currentTrack, setCurrentTrack }) => {
+const TracksView = ({ project, tracks, setTracks, currentTrack, setCurrentTrack }) => {
     const [uploadingTracks, setUploadingTracks] = useState({});
-    const [tracks, setTracks] = useState([]);
     const [dragging, setDragging] = useState(false); // to track if a drag is active
 
     useEffect(() => {
@@ -18,10 +17,15 @@ const TracksView = ({ project, currentTrack, setCurrentTrack }) => {
         };
 
         fetchTracks();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [project]);
 
     const handleTrackClick = track => {
-        setCurrentTrack(track);
+        if (track.isLocked) {
+            alert("Unlock this track by upgrading your storage plan from your Demodeck app.");
+        } else {
+            setCurrentTrack(track);
+        }
     };
 
     const handleDragOver = (event) => {
@@ -52,19 +56,23 @@ const TracksView = ({ project, currentTrack, setCurrentTrack }) => {
     const handleDrop = async (event) => {
         event.preventDefault();
         setDragging(false);
-        
-        const files = event.dataTransfer.files;
+    
+        const files = Array.from(event.dataTransfer.files);
+        const newTracksList = []; // Temporary array to accumulate new tracks
     
         if (files.length > 0) {
-            const file = files[0];
+            const audioFiles = files.filter(file => file.type.startsWith("audio/"));
     
-            if (file.type.startsWith("audio/")) {
-                const trackFile = new TrackFile(file, project.id, project.artist.id);
+            if (audioFiles.length === 0) {
+                console.error("No valid audio files found. Only audio files are supported.");
+                return;
+            }
+    
+            for (const file of audioFiles) {
+                const trackFile = new TrackFile(file, project);
                 const newTrack = await trackFile.asTrack();
-                const updatedTracks = [...tracks, newTrack];
-                setTracks(updatedTracks);
-
-                // Update the uploading progresses in the dictionary
+                newTracksList.push(newTrack);
+    
                 const progressCallback = (id, progress) => {
                     setUploadingTracks(prevUploadingTracks => {
                         if (progress === 200 || progress === 500) {
@@ -78,13 +86,13 @@ const TracksView = ({ project, currentTrack, setCurrentTrack }) => {
                             };
                         }
                     });
-                };                
-
+                };
+    
                 trackFile.upload(progressCallback);
-            } else {
-                console.error("Only audio files are supported.");
-                // Optionally, provide feedback to the user
             }
+    
+            // Update the tracks state only once after all new tracks have been added
+            setTracks([...tracks, ...newTracksList]);
         }
     };
 
@@ -104,13 +112,17 @@ const TracksView = ({ project, currentTrack, setCurrentTrack }) => {
                 >
                     <div className="track-number">{index + 1}.</div>
                     <div className="track-info">
-                        <div className={`track-name ${track.id === currentTrack?.id ? 'selected' : ''}`}>
+                        <div className={`track-name ${track.id === currentTrack?.id ? 'selected' : ''} ${track.isLocked === true ? 'locked' : ''}`}>
                             {track.name}
                         </div>
                         <div className="track-duration">
-                            {uploadingTracks[track.id] != null 
-                            ? `Uploading (${uploadingTracks[track.id]}%)` 
-                            : Helpers.formatDuration(track.duration)}
+                        {
+                            track.isLocked 
+                            ? "Locked"
+                            : uploadingTracks[track.id] != null 
+                                ? `Uploading (${uploadingTracks[track.id]}%)` 
+                                : Helpers.formatDuration(track.duration)
+                        }
                         </div>
                     </div>
                 </div>

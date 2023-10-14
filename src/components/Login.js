@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import firebase from '../firebaseConfig'; // adjust path accordingly
+import logo from '../full-logo.png';
+import firebase from '../firebaseConfig';
 
 const Login = ({ onLoginSuccess }) => {
     const [username, setUsername] = useState('');
@@ -10,7 +11,6 @@ const Login = ({ onLoginSuccess }) => {
         e.preventDefault();
         firebase.auth().signInWithEmailAndPassword(username, password)
             .then((userCredential) => {
-                // Signed in
                 onLoginSuccess();
             })
             .catch((error) => {
@@ -19,27 +19,30 @@ const Login = ({ onLoginSuccess }) => {
     };
 
     return (
-        <div className="login-container">
-            {error && <div className="error-message">{error}</div>}
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>Email:</label>
+        <div className="full-page">
+            <div className="login-container">
+                <img src={logo} alt="Demodeck Icon" className="login-logo" />
+                
+                {error && <div className="error-message">{error}</div>}
+                
+                <form onSubmit={handleSubmit}>
                     <input 
                         type="email" 
                         value={username} 
-                        onChange={(e) => setUsername(e.target.value)} 
+                        onChange={(e) => setUsername(e.target.value)}
+                        placeholder="Email"
                     />
-                </div>
-                <div>
-                    <label>Password:</label>
+                    
                     <input 
                         type="password" 
                         value={password} 
-                        onChange={(e) => setPassword(e.target.value)} 
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Password"
                     />
-                </div>
-                <button type="submit">Login</button>
-            </form>
+                    
+                    <button type="submit">Login</button>
+                </form>
+            </div>
         </div>
     );
 };

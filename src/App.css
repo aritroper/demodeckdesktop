@@ -7,6 +7,80 @@ body {
     -moz-osx-font-smoothing: grayscale;  /* Optional: smooths the font on the page */
 }
 
+.login-logo {
+    width: 300px;
+    margin-bottom: 25px;
+}
+
+/* Container styles */
+.login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 300px;
+    text-align: center;
+}
+
+/* Full-page container */
+.full-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #121212;
+}
+
+/* Input styles */
+.login-container input {
+    padding: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+    border-radius: 5px;
+    font-size: 14px;
+    color: white;
+    background-color: #232323;
+    border: 1px solid #232323;
+}
+
+/* Error message */
+.error-message {
+    padding: 15px;
+    background-color: #eb3b5a;
+    color: white;
+    margin-bottom: 15px;
+    border-radius: 12px;
+}
+
+/* Ensure consistent box-sizing for all elements */
+.login-container *,
+.login-container *::before,
+.login-container *::after {
+    box-sizing: border-box;
+}
+
+/* Button styles */
+.login-container button {
+    padding: 10px;
+    width: 100%;
+    border-radius: 5px;
+    font-size: 14px;
+    border: none;
+    background-color: #3688DA;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.login-container button:hover {
+    background-color: #6ea4db;
+}
+
+.icon {
+    width: 40px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
 .project-container {
     background-color: #121212;
     padding: 30px;
@@ -27,8 +101,10 @@ body {
 }
 
 .tracks-list {
+    height: 650px;
     width: 100%;
     transition: all 0.3s ease-in-out;
+    overflow-y: auto;
 }
 
 .track-item {
@@ -36,6 +112,10 @@ body {
     align-items: center;    /* Vertically center children */
     padding: 10px 0;        /* Some vertical padding for spacing between tracks */
     border-radius: 5px;
+}
+
+.track-name.locked {
+    opacity: 0.5;
 }
 
 .track-name.selected {
@@ -73,8 +153,7 @@ body {
 }
 
 .projects-list {
-    padding-top: 5px;
-    padding-bottom: 5px;
+    padding: 10px;
     background-color: #121212;
     display: flex;
     flex-direction: column;
@@ -84,8 +163,51 @@ body {
 }
 
 .project-item {
+    position: relative;
     width: 80px; /* Ensure it's less than 100% to observe centering */
     text-align: center; /* To ensure the image inside is centered if it doesn't take full width */
+    cursor: pointer;
+}
+
+.tooltip {
+    opacity: 0; /* Start with fully transparent */
+    position: absolute;
+    top: 50%;
+    left: 110%; 
+    transform: translateY(-50%);
+    background-color: #333;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    white-space: nowrap;
+    z-index: 1;
+    margin-left: 10px;
+    transition: opacity 0.3s ease; /* This will provide the fade effect */
+    pointer-events: none; /* This ensures the tooltip doesn't interfere with mouse events when invisible */
+    text-align: left;  /* This will align the text to the left */
+}
+
+.tooltip-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px; /* A small space between title and description */
+}
+
+.tooltip-description {
+    font-size: 16px;
+    opacity: 0.5;
+}
+
+.menu-button {
+    color: white;
+}
+
+.menu-button:hover .tooltip {
+    opacity: 1; /* Full visibility on hover */
+}
+
+.project-item:hover .tooltip {
+    opacity: 1; /* Full visibility on hover */
 }
 
 .project-item img {
@@ -163,8 +285,10 @@ body {
 
 .projects-section {
     width: 100px;
-    overflow-y: auto; /* in case the projects list gets too long */
     padding: 10px;
+    display: flex; /* Center horizontally */
+    align-items: center; /* Center vertically if needed */
+    flex-direction: column; /* To stack child elements vertically */
 }
 
 .art-section {
@@ -437,6 +561,9 @@ body {
 }
 
 .popup {
+    opacity: 1;
+    /* visibility: hidden; */
+    transition: opacity 0.2 ease-out;
     position: fixed;
     top: 0;
     left: 0;
@@ -446,6 +573,11 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.popup.active {
+    opacity: 1;
+    visibility: visible; /* Add this */
 }
 
 .popup-content {
@@ -484,12 +616,16 @@ body {
     background: #151515;
 }
 
-.artist-image {
-    width: 40px;
-    height: 40px;
+.artist-circle-2 {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border-radius: 50%; /* Makes the image circular */
     margin-right: 10px;
-    background-color: white;
+    background-color: #3d3d3d;
+    font-size: 15px;  /* Adjust font-size as needed */
 }
 .artist-name {
     font-size: 16px;

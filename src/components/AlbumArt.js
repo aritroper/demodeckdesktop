@@ -6,7 +6,7 @@ import placeholder from '../gradient-placeholder.png';
 import Helpers from '../Helpers';
 import '../App.css';
 
-const AlbumArt = ({ project, setPlayProject }) => {
+const AlbumArt = ({ project, onPlayProject }) => {
   const marqueeSpaceGap = '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0';
   const [isMarqueePaused, setIsMarqueePaused] = useState(false);
 
@@ -25,11 +25,6 @@ const AlbumArt = ({ project, setPlayProject }) => {
 
   const trackCount = project.numberOfTracks;
   const duration = project.duration;
-
-  const togglePlayPause = () => {
-    setPlayProject(true);
-    setTimeout(() => setPlayProject(false), 0);
-  };
 
   return (
     <div className="project-container">
@@ -50,7 +45,7 @@ const AlbumArt = ({ project, setPlayProject }) => {
           )}
           <div className="track-count">{trackCount} tracks - {Helpers.formatDuration(project.duration)}</div>
         </div>
-        <button className="project-play-btn" onClick={togglePlayPause}>
+        <button className="project-play-btn" onClick={onPlayProject}>
           <FontAwesomeIcon icon={faPlay}/>
         </button>
       </div>

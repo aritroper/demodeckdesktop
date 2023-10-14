@@ -1,39 +1,52 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useImperativeHandle, forwardRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlay, faPause, faBackward, faForward } from '@fortawesome/free-solid-svg-icons'
+import placeholder from '../gradient-placeholder.png';
 import Helpers from '../Helpers';
 
-const Player = ({ project, currentTrack, setCurrentTrack, playProject }) => {
+const Player = forwardRef((props, ref) => {
+
+    const { tracks, currentTrack, setCurrentTrack } = props;
+    
     const audioRef = useRef(new Audio());
     const [isPlaying, setIsPlaying] = useState(false);
     const [progress, setProgress] = useState(0);
-    const [tracks, setTracks] = useState([]);
     const [audioElements, setAudioElements] = useState([]);
     const [elapsedTime, setElapsedTime] = useState(0);
 
+    useImperativeHandle(ref, () => ({
+        playProject: () => {
+            // Your play logic here
+            if (tracks) {
+                if (tracks[0] === currentTrack) {
+                    resetAndPlayCurrentTrack();
+                } else {
+                    setCurrentTrack(tracks[0]);
+                }
+            }
+        },
+    }));
+
     useEffect(() => {
-        if (project) {
-            // Fetching tracks when a new project is selected
-            const fetchTracks = async () => {
-                const projectTracks = await project.getSnapshotOfTracks();
-
-                // Create audio elements and preload
-                const audioEls = projectTracks.map(track => {
-                    const audio = new Audio(track.audioUrl);
-                    audio.preload = 'auto';  // This allows browser to decide, usually it will preload.
-                    return audio;
-                });
-
-                setTracks(projectTracks);
-                setAudioElements(audioEls); 
-            };
-            
-            fetchTracks();
-        }
-    }, [project]);
+        // Create audio elements and preload
+        const audioEls = tracks
+            .filter(track => track && track.audioUrl)  // Filter out tracks without audioUrl
+            .map(track => {
+            const audio = new Audio(track.audioUrl);
+            audio.preload = 'auto';  // This allows browser to decide, usually it will preload.
+            return audio;
+        });
+    
+        setAudioElements(audioEls); 
+    }, [tracks]);
 
     useEffect(() => {
         if (currentTrack) {
+
+            if(currentTrack.isLocked) {
+                playNextTrack();
+            }
+
             const currentIdx = tracks.findIndex(track => track.id === currentTrack.id);
 
             if (audioRef.current) {
@@ -46,17 +59,13 @@ const Player = ({ project, currentTrack, setCurrentTrack, playProject }) => {
                 audioRef.current = audioElements[currentIdx];  // Point the ref to the preloaded audio
                 setProgress(0);
                 setIsPlaying(true);
-                audioRef.current.play();
+                audioRef.current.play().catch(error => {
+                    console.error('Playback error:', error);
+                });
             }
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentTrack]);
-
-    useEffect(() => {
-        if (playProject && tracks.length > 0) {
-            setCurrentTrack(tracks[0]);
-        }
-    }, [playProject, tracks, setCurrentTrack]);
 
     useEffect(() => {
         setElapsedTime(audioRef.current.currentTime);
@@ -87,17 +96,6 @@ const Player = ({ project, currentTrack, setCurrentTrack, playProject }) => {
             }
         };
     }, [currentTrack]); // eslint-disable-line react-hooks/exhaustive-deps
-
-    function playPreviousTrack() {
-        const currentIdx = tracks.findIndex(track => track.id === currentTrack.id);
-        const prevTrackIdx = currentIdx - 1;
-    
-        if (prevTrackIdx >= 0 && audioRef.current.currentTime <= 3) {
-            setCurrentTrack(tracks[prevTrackIdx]);
-        } else {
-            resetAndPlayCurrentTrack();
-        }
-    }
     
     function resetAndPlayCurrentTrack() {
         setProgress(0);
@@ -105,14 +103,39 @@ const Player = ({ project, currentTrack, setCurrentTrack, playProject }) => {
         audioRef.current.play();
     }
 
+    function playPreviousTrack() {
+        const currentIdx = tracks.findIndex(track => track.id === currentTrack.id);
+        
+        let prevTrackIdx = currentIdx - 1;
+        
+        // Keep looking for an unlocked track
+        while (prevTrackIdx >= 0 && tracks[prevTrackIdx].isLocked) {
+            prevTrackIdx--;
+        }
+        
+        if (prevTrackIdx >= 0 && audioRef.current.currentTime <= 3) {
+            setCurrentTrack(tracks[prevTrackIdx]);
+        } else {
+            resetAndPlayCurrentTrack();
+        }
+    }
+
     function playNextTrack() {
         const currentIdx = tracks.findIndex(track => track.id === currentTrack.id);  // Derive the current index directly
-        const nextTrackIdx = currentIdx + 1;
+    
+        let nextTrackIdx = currentIdx + 1;
+    
+        // Keep looking for an unlocked track
+        while (nextTrackIdx < tracks.length && tracks[nextTrackIdx].isLocked) {
+            nextTrackIdx++;
+        }
+    
+        // If we found an unlocked track
         if (nextTrackIdx < tracks.length) {
             const newTrack = tracks[nextTrackIdx];
             setCurrentTrack(newTrack);
         }
-    };
+    }
 
     const togglePlayPause = () => {
         if (audioRef.current.paused) {
@@ -144,7 +167,7 @@ const Player = ({ project, currentTrack, setCurrentTrack, playProject }) => {
     return (
         <div className="player">
             <div className="player-left">
-                <img src={currentTrack.project.imageUrl} alt="Project Art" className="player-art"/>
+                <img src={currentTrack.project.imageUrl || placeholder} alt="Album Art" className="player-art" />
                 <div className="player-info">
                     <span className="track-name">{currentTrack.name}</span>
                     <span className="artist-name">{currentTrack.project.name}</span>
@@ -180,6 +203,6 @@ const Player = ({ project, currentTrack, setCurrentTrack, playProject }) => {
                 </div>
         </div>
     );
-};
+});
 
 export default Player;

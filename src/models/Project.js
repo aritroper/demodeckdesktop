@@ -79,9 +79,11 @@ class Project {
         const snapshot = await this.getFirebaseRef().child("tracks").once("value");
         const tracks = snapshot.val();
         
+        if (!tracks) return []; // Return empty list if tracks don't exist
+    
         return Object.entries(tracks).map(([key, value]) => {
             const metadata = value.metadata;
-            const currentRevisionId = value.metadata["current revision"];
+            const currentRevisionId = metadata["current revision"];
             const currentRevision = value.revisions[currentRevisionId].metadata;
             return new Track(
                 key, 
@@ -90,9 +92,10 @@ class Project {
                 currentRevision.duration,
                 currentRevision["remote url"],
                 metadata["order weight"],
+                metadata["locked"] === true ? true : false,
                 this
             );
-        }).sort((a, b) => a.orderWeight > b.orderWeight);
+        }).sort((a, b) => a.orderWeight - b.orderWeight);  // Fixed the sorting logic as well
     }
 
     async getSnapshotOfActivity(Z = -1) {

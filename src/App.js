@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import MenuBar from './components/MenuBar'
 import ProjectsList from './components/ProjectList';
 import AlbumArt from './components/AlbumArt';
@@ -7,22 +7,59 @@ import ProjectActivity from './components/ProjectActivity';
 import Player from './components/Player';
 import Login from './components/Login';
 import SelectArtistPopup from './components/SelectArtistPopup';
+import icon from './icon.png';
+import User from './models/User';
+import Artist from './models/Artist';
+import firebase from './firebaseConfig';
+import SettingsPopup from './components/SettingsPopup';
 
 function App() {
-    const [isPopupVisible, setIsPopupVisible] = useState(false);
+    const [isSelectArtistPopupVisible, setIsSelectArtistPopupVisible] = useState(false);
+    const [isSettingsPopupVisible, setIsSettingsPopupVisible] = useState(false);
     const [selectedArtist, setSelectedArtist] = useState(null);
     const [selectedProject, setSelectedProject] = useState(null);
+    const [tracks, setTracks] = useState([]);
     const [currentTrack, setCurrentTrack] = useState(null);
     const [loggedIn, setLoggedIn] = useState(false);
-    const [playProject, setPlayProject] = useState(false);
 
-    const handleLoginSuccess = () => {
-        setLoggedIn(true);
+    const playerRef = useRef();
+
+    useEffect(() => {
+        // This sets up a listener for changes in the auth state
+        const unsubscribe = firebase.auth().onAuthStateChanged(async user => {
+            if (user) {
+                // User is logged in
+                const loggedInUser = await User.getUserById(user.uid);
+                if (loggedInUser.artistIds.length > 0) {
+                    const selectedArtist = await Artist.getArtistById(loggedInUser.artistIds[0]);
+                    setSelectedArtist(selectedArtist);
+                }
+                setLoggedIn(true);
+            } else {
+                // User is logged out
+                setLoggedIn(false);
+            }
+        });
+
+        // Cleanup the listener on component unmount
+        return () => unsubscribe();
+
+    }, []);
+
+    const handleLoginSuccess = async () => {
+        const loggedInUser = await User.getUserById(firebase.auth().currentUser.uid);
+        if (loggedInUser.artistIds.length > 0) {
+            const selectedArtist = await Artist.getArtistById(loggedInUser.artistIds[0]);
+            setSelectedArtist(selectedArtist);
+            setLoggedIn(true);
+        } else {
+            setLoggedIn(true);
+        }
     };
 
     const handleArtistSelect = (artist) => {
         setSelectedArtist(artist);
-        setIsPopupVisible(false);
+        setIsSelectArtistPopupVisible(false);
     };
 
     if (!loggedIn) {
@@ -32,16 +69,19 @@ function App() {
     return (
         <div className="app-wrapper">  {/* A new wrapping div */}
             <div className="app-container">
-                {isPopupVisible && <SelectArtistPopup 
+                {isSelectArtistPopupVisible && <SelectArtistPopup 
                     onSelect={handleArtistSelect}
-                    onClose={() => setIsPopupVisible(false)}
+                    onClose={() => setIsSelectArtistPopupVisible(false)}
+                    isActive={isSelectArtistPopupVisible}
                 />}
-
+                {isSettingsPopupVisible && <SettingsPopup 
+                    onClose={() => setIsSettingsPopupVisible(false)}
+                />}
                 <div className="projects-section">
+                    <img src={icon} alt="Demodeck Icon" className="icon" />
                     <MenuBar 
-                        onLogOut={() => {/* Handle logout logic */}}
-                        onSearch={() => {/* Handle search logic */}}
-                        onMyArtist={() => { setIsPopupVisible(true) }}
+                        onSettings={() => { setIsSettingsPopupVisible(true) }}
+                        onMyArtist={() => { setIsSelectArtistPopupVisible(true) }}
                         selectedArtist={selectedArtist}
                     />
                     <ProjectsList artist={selectedArtist} onSelect={setSelectedProject} />
@@ -49,23 +89,25 @@ function App() {
                 <div className="art-section">
                     <AlbumArt 
                         project={selectedProject} 
-                        setPlayProject={setPlayProject}
+                        onPlayProject={() => { playerRef.current.playProject() }}
                     />
                     <ProjectActivity project={selectedProject} />
                 </div>
                 <div className="edit-project-section">
                     <EditProjectView 
                         project={selectedProject} 
+                        tracks={tracks}
+                        setTracks={setTracks}
                         currentTrack={currentTrack} 
-                        setCurrentTrack={setCurrentTrack} 
+                        setCurrentTrack={setCurrentTrack}
                     />
                 </div>
             </div>
             <Player 
-                project={selectedProject} 
+                ref={playerRef}
+                tracks={tracks} 
                 currentTrack={currentTrack} 
                 setCurrentTrack={setCurrentTrack} 
-                playProject={playProject} 
             /> 
         </div>
     );
