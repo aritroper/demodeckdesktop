@@ -1,18 +1,21 @@
 import React, { useEffect, useState, useRef, useImperativeHandle, forwardRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlay, faPause, faBackward, faForward } from '@fortawesome/free-solid-svg-icons'
+import { faPlay, faPause, faBackward, faForward, faChevronDown } from '@fortawesome/free-solid-svg-icons'
 import placeholder from '../gradient-placeholder.png';
 import Helpers from '../Helpers';
 
 const Player = forwardRef((props, ref) => {
 
     const { tracks, currentTrack, setCurrentTrack } = props;
+
+    const playerRef = useRef(null);
     
     const audioRef = useRef(new Audio());
     const [isPlaying, setIsPlaying] = useState(false);
     const [progress, setProgress] = useState(0);
     const [audioElements, setAudioElements] = useState([]);
     const [elapsedTime, setElapsedTime] = useState(0);
+    const [isExpanded, setIsExpanded] = useState(false);
 
     useImperativeHandle(ref, () => ({
         playProject: () => {
@@ -26,6 +29,17 @@ const Player = forwardRef((props, ref) => {
             }
         },
     }));
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsExpanded(window.innerWidth <= 768);
+        };
+        
+        window.addEventListener('resize', handleResize);
+        
+        // Cleanup the event listener on unmount
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     useEffect(() => {
         // Create audio elements and preload
@@ -147,6 +161,12 @@ const Player = forwardRef((props, ref) => {
         }
     };
 
+    const handleBackgroundTap = (e) => {
+        if (e.target === playerRef.current) {
+            setIsExpanded(true);
+        }
+    };
+
     const skipBackward = () => {
         playPreviousTrack();
     };
@@ -164,8 +184,55 @@ const Player = forwardRef((props, ref) => {
 
     if (!currentTrack) return null;
 
-    return (
-        <div className="player">
+    const expandedPlayer = () => {
+        return (
+            <div className="expanded-player">
+                <div className="header">
+                    <button className="chevron-button">
+                        {/* You can use an SVG or icon for the chevron down */}
+                        <FontAwesomeIcon icon={faChevronDown} onClick={() => setIsExpanded(false)} />
+                    </button>
+                    <div className="now-playing">Now Playing</div>
+                </div>
+                <div className="expanded-content">
+                    <img className="expanded-album-art" src={currentTrack.project.imageUrl} alt="Album Art" />
+                    <div className="expanded-track-details">
+                        <div className="expanded-track-name">{currentTrack?.name}</div>
+                        <div className="expanded-track-info">{currentTrack?.project.name}</div>
+                    </div>
+                </div>
+                <div className="expanded-scrub-bar">
+                    <div className="scrub-bar-controls">
+                        <div className="progress" style={{ width: `${progress}%` }}></div>
+                        <input 
+                            type="range" 
+                            value={progress} 
+                            max="100" 
+                            className="seeker" 
+                            onChange={handleSeek} 
+                        />
+                    </div>          
+                </div>
+                <div className="expanded-controls">
+                    {/* You can use SVGs or icons for these controls */}
+                    <FontAwesomeIcon className="skip-back"  onClick={skipBackward} icon={faBackward} />
+                    <button className="play-pause bigger-controls" onClick={togglePlayPause}>
+                        {isPlaying ? 
+                            <FontAwesomeIcon icon={faPause} /> : 
+                            <FontAwesomeIcon icon={faPlay} />
+                        }
+                    </button>
+                    <FontAwesomeIcon className="skip-forward"  onClick={skipForward} icon={faForward} />
+                </div>
+            </div>
+        );
+    }
+
+    const playerContainerClass = isExpanded ? "player-container expanded" : "player-container";
+
+    return <div className={playerContainerClass}>
+        {expandedPlayer()}
+        <div className="player" onClick={handleBackgroundTap} ref={playerRef}>
             <div className="player-left">
                 <img src={currentTrack.project.imageUrl || placeholder} alt="Album Art" className="player-art" />
                 <div className="player-info">
@@ -188,21 +255,21 @@ const Player = forwardRef((props, ref) => {
                 <div className="scrub-bar">
                     <span className="time-label">{Helpers.formatDuration(elapsedTime)}</span>
                     <div className="scrub-bar-controls">                
-                    <div className="progress" style={{ width: `${progress}%` }}></div>
-                    <input 
-                        type="range" 
-                        value={progress} 
-                        max="100" 
-                        className="seeker" 
-                        onChange={handleSeek} 
-                    />
+                        <div className="progress" style={{ width: `${progress}%` }}></div>
+                        <input 
+                            type="range" 
+                            value={progress} 
+                            max="100" 
+                            className="seeker" 
+                            onChange={handleSeek} 
+                        />
                     </div>
                     <span className="time-label">{Helpers.formatDuration(currentTrack.duration)}</span>
                 </div>
-               
+            
                 </div>
         </div>
-    );
+    </div>
 });
 
 export default Player;

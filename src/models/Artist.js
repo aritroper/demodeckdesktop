@@ -3,16 +3,28 @@ import Project from '../models/Project';
 
 class Artist {
     // Constructor that initializes the properties of the artist
-    constructor(id, name) {
+    constructor(id, name, members) {
         this.id = id;
         this.name = name || "Unnamed Artist"; 
+        this.members = members;
     }
 
     static async getArtistById(artistId) {
         const snapshot = await firebase.database()
-            .ref("artists").child(artistId).once("value");
+            .ref("artists").child(artistId).child("metadata").once("value");
         const artist = snapshot.val();
-        return new Artist(artistId, artist.metadata.name);
+    
+        let members;
+        try {
+            const membersSnapshot = await firebase.database().ref("artists")
+                .child(artistId).child("members").once("value");
+            members = Object.keys(membersSnapshot.val() || {});  // Using Object.keys to get the dictionary keys
+        } catch (error) {
+            console.error("Error fetching members:", error);
+            members = [];  // If permission is denied or any other error, set members as an empty list
+        }
+        
+        return new Artist(artistId, artist.name, members);
     }
 
     /**

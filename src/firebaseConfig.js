@@ -3,6 +3,7 @@ import 'firebase/compat/auth';
 import 'firebase/compat/database';
 import 'firebase/compat/storage'; 
 import 'firebase/compat/functions';
+import 'firebase/compat/functions';
 
 const config = {
     apiKey: "AIzaSyBUZ7DsM0EI2bdf5nIdwYI9DFbD_taP7RA",

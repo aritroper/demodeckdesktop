@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import MenuBar from './components/MenuBar'
 import ProjectsList from './components/ProjectList';
 import AlbumArt from './components/AlbumArt';
+import LinkSharingModal from './components/LinkSharingModal'; 
 import EditProjectView from './components/EditProjectView';
 import ProjectActivity from './components/ProjectActivity';
 import Player from './components/Player';
@@ -12,49 +13,86 @@ import User from './models/User';
 import Artist from './models/Artist';
 import firebase from './firebaseConfig';
 import SettingsPopup from './components/SettingsPopup';
+import Helpers from  './Helpers';
+import placeholder from './gradient-placeholder.png';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlay } from '@fortawesome/free-solid-svg-icons'
+import Project from './models/Project';
 
 function App() {
     const [isSelectArtistPopupVisible, setIsSelectArtistPopupVisible] = useState(false);
     const [isSettingsPopupVisible, setIsSettingsPopupVisible] = useState(false);
+    const [isSharingPopupVisible, setIsSharingPopupVisible] = useState(false);
     const [selectedArtist, setSelectedArtist] = useState(null);
     const [selectedProject, setSelectedProject] = useState(null);
     const [tracks, setTracks] = useState([]);
     const [currentTrack, setCurrentTrack] = useState(null);
+    const [loading, setLoading] = useState(true);
     const [loggedIn, setLoggedIn] = useState(false);
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth); // (1) useState for window width
 
     const playerRef = useRef();
 
     useEffect(() => {
-        // This sets up a listener for changes in the auth state
-        const unsubscribe = firebase.auth().onAuthStateChanged(async user => {
-            if (user) {
-                // User is logged in
-                const loggedInUser = await User.getUserById(user.uid);
-                if (loggedInUser.artistIds.length > 0) {
-                    const selectedArtist = await Artist.getArtistById(loggedInUser.artistIds[0]);
-                    setSelectedArtist(selectedArtist);
-                }
-                setLoggedIn(true);
-            } else {
-                // User is logged out
-                setLoggedIn(false);
+        // Initial fetch of the URL params and project setup
+        const setupProjectFromURL = async () => {
+            const params = new URLSearchParams(window.location.search);
+            const encodedArtistId = params.get('aid');
+            const encodedProjectId = params.get('pid');
+    
+            if (encodedArtistId && encodedProjectId) {
+                const artistId = atob(encodedArtistId);
+                const projectId = atob(encodedProjectId);
+                const project = await Project.getProjectById(artistId, projectId);
+                setSelectedProject(project);
             }
-        });
+        };
+    
+        // Authentication state change handling
+        const handleAuthStateChange = async user => {
+            if (user) {
+                await handleLoginSuccess(user);
+                await setupProjectFromURL();
+            } else {
+                setLoggedIn(false);
+                await setupProjectFromURL();
+            }
 
-        // Cleanup the listener on component unmount
-        return () => unsubscribe();
+            setLoading(false);
+        };
+    
+        // Initialize the setup and auth subscription
+        const init = async () => {
+            // Subscribe to auth state changes
+            const unsubscribe = firebase.auth().onAuthStateChanged(handleAuthStateChange);
 
+            // Cleanup
+            return () => unsubscribe();
+        };
+    
+        init();
     }, []);
 
-    const handleLoginSuccess = async () => {
-        const loggedInUser = await User.getUserById(firebase.auth().currentUser.uid);
+    useEffect(() => {
+        // (2) useEffect to handle window resize event
+        const handleResize = () => {
+            setWindowWidth(window.innerWidth);
+        };
+
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
+    const handleLoginSuccess = async (user) => {
+        const loggedInUser = await User.getUserById(user.uid);
         if (loggedInUser.artistIds.length > 0) {
             const selectedArtist = await Artist.getArtistById(loggedInUser.artistIds[0]);
             setSelectedArtist(selectedArtist);
-            setLoggedIn(true);
-        } else {
-            setLoggedIn(true);
         }
+        setLoggedIn(true);
     };
 
     const handleArtistSelect = (artist) => {
@@ -62,7 +100,15 @@ function App() {
         setIsSelectArtistPopupVisible(false);
     };
 
-    if (!loggedIn) {
+    if (loading) {
+        return (
+            <div className="splash-screen">
+                <img src={icon} alt="Demodeck Logo" className="splash-logo" />
+            </div>
+        );
+    }
+
+    if (!loggedIn & !selectedProject) {
         return <Login onLoginSuccess={handleLoginSuccess} />;
     }
 
@@ -84,16 +130,59 @@ function App() {
                         onMyArtist={() => { setIsSelectArtistPopupVisible(true) }}
                         selectedArtist={selectedArtist}
                     />
-                    <ProjectsList artist={selectedArtist} onSelect={setSelectedProject} />
-                </div>
-                <div className="art-section">
-                    <AlbumArt 
-                        project={selectedProject} 
-                        onPlayProject={() => { playerRef.current.playProject() }}
+                    <ProjectsList 
+                        artist={selectedArtist} 
+                        onSelect={setSelectedProject}
+                        onProjectsLoaded={(projects) => {
+                            if (!selectedProject) {
+                                setSelectedProject(projects[0]);
+                            }
+                        }}
                     />
-                    <ProjectActivity project={selectedProject} />
                 </div>
+                <LinkSharingModal 
+                    selectedProject={selectedProject}
+                    isOpen={isSharingPopupVisible} 
+                    onClose={() => setIsSharingPopupVisible(false)} 
+                />
+                {windowWidth > 850 && (  // (3) conditionally render art-section based on window width
+                    <div className="album-art-section">
+                        <AlbumArt 
+                            project={selectedProject} 
+                            onPlayProject={() => { playerRef.current.playProject() }}
+                            onShareProject={async () => {
+                                const currentUser = firebase.auth().currentUser;
+
+                                if (currentUser && selectedProject.artist.members.includes(currentUser.uid)) {
+                                    setIsSharingPopupVisible(true);
+                                    return;
+                                }
+
+                                const url = selectedProject.generateSharableURL();
+                                try {
+                                    await navigator.clipboard.writeText(url);
+                                    alert("Link copied.");
+                                } catch (err) {
+                                    alert("Failed to copy link.");
+                                }
+                            }}
+                        />
+                        <ProjectActivity project={selectedProject} />
+                    </div>
+                )}
                 <div className="edit-project-section">
+                    {selectedProject && windowWidth <= 850 && (  // (3) conditionally render art-section based on window width
+                        <div className="mini-album-art-section">
+                            <img src={selectedProject.imageUrl || placeholder} alt="Album Art" className="mini-album-image" />
+                            <div className="mini-project-info">
+                                <div className="mini-project-name">{selectedProject.name}</div>
+                                <div className="mini-track-count">{selectedProject.numberOfTracks} tracks - {Helpers.formatDuration(selectedProject.duration)}</div>
+                            </div>
+                            <button className="project-play-btn" onClick={ () => { playerRef.current.playProject() }}>
+                            <FontAwesomeIcon icon={faPlay}/>
+                            </button>
+                        </div>
+                    )}
                     <EditProjectView 
                         project={selectedProject} 
                         tracks={tracks}

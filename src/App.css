@@ -12,6 +12,130 @@ body {
     margin-bottom: 25px;
 }
 
+.modal-button-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between; 
+}
+
+.modal-overlay {
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    right: 0; 
+    bottom: 0; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    background-color: rgba(0,0,0,0.7);
+    z-index: 9999;
+  }
+  
+  .modal-content {
+    width: 300px; 
+    padding: 20px; 
+    background-color: #121212;
+    border-radius: 5px;
+    box-shadow: 0px 0px 15px rgba(0,0,0,0.3);
+  }
+
+
+  .modal-overlay {
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    right: 0; 
+    bottom: 0; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    background-color: rgba(0,0,0,0.7);
+  }
+  
+  .modal-content {
+    width: 360px; 
+    background-color:#232323;
+    border-radius: 5px;
+  }
+
+  .modal-content h2 {
+    margin-top: 0;
+    font-weight: normal;
+  }
+  
+  /* Added styles */
+  .modal-content select {
+    width: 100%;
+    background: #333; 
+    color: white;
+    font-size: 14px;
+    padding: 20px;
+    appearance: none; 
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='white'><path d='M7 10l5 5 5-5z'/></svg>");
+    background-position: right 10px center;
+    background-repeat: no-repeat;
+    border: none;
+    border-radius: 4px;
+    margin-bottom: 10px; /* to separate it from the buttons */
+  }
+
+
+  
+.modal-content button {
+all: unset;
+background-color: #3688DA;
+border-radius: 40px;
+padding-left: 25px;
+padding-right: 25px;
+height: 40px;
+}
+
+.modal-content button:hover {
+    cursor: pointer;
+}
+
+/* Splash Screen Styles */
+.splash-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #000000; /* you can change this to match your app's background color */
+}
+
+.link-button {
+    background-color: transparent !important;
+    border: 1px solid white !important; /* Change 'white' to any desired border color */
+}
+
+.link-button:hover {
+    background-color: #333 !important;
+}
+
+.done-button:hover {
+    background-color: #4a9def;
+}
+  
+
+@keyframes popIn {
+    0% {
+        transform: scale(0.7);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.1); /* Overshoots a little to give a springy effect */
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.splash-logo {
+    animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; 
+    width: 80px;
+}
 /* Container styles */
 .login-container {
     display: flex;
@@ -27,7 +151,7 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background: #121212;
+    background: #000000;
 }
 
 /* Input styles */
@@ -38,8 +162,8 @@ body {
     border-radius: 5px;
     font-size: 14px;
     color: white;
-    background-color: #232323;
-    border: 1px solid #232323;
+    background-color: #121212;
+    border: 1px solid #121212;
 }
 
 /* Error message */
@@ -83,6 +207,7 @@ body {
 
 .project-container {
     background-color: #121212;
+    width: 300px;
     padding: 30px;
     display: flex;
     flex-direction: column;
@@ -130,6 +255,13 @@ body {
     margin-top: 20px;
 }
 
+/* Default view, only show text */
+.tab-icon {
+    display: none;
+}
+
+
+
 .track-number {
     width: 30px;   /* Fixed width for the track number */
     text-align: right;  /* Align number to the right of its container */
@@ -164,7 +296,7 @@ body {
 
 .project-item {
     position: relative;
-    width: 80px; /* Ensure it's less than 100% to observe centering */
+    width: 60px; /* Ensure it's less than 100% to observe centering */
     text-align: center; /* To ensure the image inside is centered if it doesn't take full width */
     cursor: pointer;
 }
@@ -218,14 +350,25 @@ body {
   
 .album-image {
     border-radius: 15px;
+    height: 300px;
     width: 300px;
     margin-bottom: 20px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.6);
+}
+
+.mini-album-image {
+    width: 70px;
+    height: 70px;
+    border-radius: 5px;
 }
   
 .project-info {
     display: flex;
     justify-content: space-between; /* this will push items to either end of the container */
     align-items: center; /* this will vertically center align items */
+    flex-grow: 1; /* Takes up all available space */
+    box-sizing: border-box;
+    width: 300px;
 }
 
 .play-button {
@@ -261,9 +404,23 @@ body {
 }
 
 .project-name {
-    font-size: 24px; /* Adjust as needed */
+    font-size: 22px; /* Adjust as needed */
     font-weight: 600;
-    width: 235px;
+    width: 200px !important; /* Override marquee style */
+}
+
+.mini-project-info {
+    margin-left: 15px;
+}
+
+.mini-project-name {
+    font-size: 15px; /* Adjust as needed */
+    font-weight: 600;
+}
+
+.mini-track-count {
+    font-size: 15px; /* Adjust as needed */
+    font-weight: 200;
 }
 
 .track-count {
@@ -283,27 +440,39 @@ body {
     min-height: 100vh;      /* Take up full viewport height */
 }
 
+.mini-album-art-section {
+    background-color: #121212;
+    border-radius: 12px;
+    height: 90px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
 .projects-section {
-    width: 100px;
+    width: 80px;
     padding: 10px;
     display: flex; /* Center horizontally */
     align-items: center; /* Center vertically if needed */
     flex-direction: column; /* To stack child elements vertically */
 }
 
-.art-section {
+.album-art-section {
     display: flex;
     flex-direction: column;  /* This ensures children are stacked vertically */
     align-items: flex-start; /* centers the project art */
     background-color: black; /* as you mentioned you want a black background */
     color: white; /* for the text color */
-    padding: 10px;
+    padding-top: 10px;
 }
 
 .edit-project-section {
     flex: 1; /* take 1/3 of the space */
     overflow-y: auto; /* in case the tracks list gets too long */
     padding: 10px;
+    margin-right: 10px;
 }
 
 .tracks-list.dragging {
@@ -345,6 +514,87 @@ body {
     margin-bottom: 10px; /* Some spacing between items */
 }
 
+/* ExpandedPlayer.css */
+
+.header {
+    display: flex;
+    align-items: center; /* Vertically center the contents */
+    justify-content: center; /* Horizontally center the text */
+    width: 100%; /* Take full width of the player */
+    height: 60px; /* Assuming this as the height of the header, you can adjust it */
+    position: fixed;
+    top: 0;
+    background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent black */
+    z-index: 1000; /* Ensure it stays on top */
+}
+
+.chevron-button {
+    position: absolute;
+    left: 30px; /* 30px margin from the left */
+    background-color: transparent;
+    font-size: 22px;
+    border: none;
+    color: white; /* Assuming white for the icon color */
+    cursor: pointer;
+}
+
+.now-playing {
+    font-size: 18px; /* Adjust according to your preference */
+    font-weight: 600;
+    color: white; /* Assuming white as the text color */
+}
+
+
+
+.expanded-player {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #121212;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* This will center the album art and track details container */
+    justify-content: center;
+    z-index: 999;
+    overflow: hidden; 
+}
+
+.expanded-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Left align the items inside */
+    text-align: left; /* Ensure text inside is also left-aligned */
+}
+  
+  .expanded-album-art {
+    max-height: 300px;
+    margin-bottom: 30px;
+  }
+  
+  .expanded-track-name {
+    font-weight: bold;
+    font-size: 25px;
+  }
+
+  .expanded-track-info {
+    font-size: 20px;
+    font-weight: 600;
+    opacity: 0.7;
+  }
+  
+  .expanded-player .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    font-size: 20px;
+  }
+
 .activity-profile-pic {
     display: flex; /* Converts the container into a flex container */
     align-items: center; /* Vertically aligns child items in the center */
@@ -372,7 +622,13 @@ body {
 }
 
 .tab-bar button {
-    width: 130px;
+    display: flex;
+    align-items: center; /* Centers content vertically */
+    justify-content: center; /* Centers content horizontally */
+}
+
+.tab-bar button {
+    width: 15%;
     background-color: transparent;
     border-radius: 10px;
     color: white;
@@ -412,12 +668,18 @@ body {
     color: black;
     border-radius: 50%;
     border: none;
-    background-color: white;
+    background-color: clear;
+    transition: transform 0.3s ease; /* for smooth scaling */
+}
+
+.bigger-controls {
+    font-size: 30px;
+    width: 80px;
+    height: 80px;
 }
 
 .play-pause:hover {
-    width: 37px;
-    height: 37px;
+    transform: scale(1.05); /* Adjust 1.2 as per your requirement */
 }
 
 .player-left {
@@ -435,7 +697,12 @@ body {
 .player-info {
     display: flex;
     flex-direction: column;
-    margin-left: 10px;
+    margin-left: 70px;
+    position: absolute;
+}
+
+.expanded-player-header {
+    top: 0;
 }
 
 .player-info .track-name {
@@ -447,11 +714,24 @@ body {
     opacity: 0.7; /* Slightly faded to differentiate from track name */
 }
 
+.expanded-player, .player {
+    transition: transform 0.2s ease-out;
+}
+
+.expanded-player {
+    transform: translateY(100%); /* Starts off the screen */
+}
+
+.player-container.expanded .expanded-player {
+    transform: translateY(0); /* Slides into view */
+}
+
 .player-center {
     flex: 1; /* To take the remaining space in the player */
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative; /* Added this */
 }
 
 .scrub-bar {
@@ -460,11 +740,17 @@ body {
     width: 40%;
 }
 
+.expanded-scrub-bar {
+    margin-top: 25px;
+    display: flex;
+    align-items: center;
+    width: 300px;
+}
+
 .scrub-bar-controls {
     width: 100%; /* Adjust as desired */
-    height: 4px;
+    height: 4.5px;
     background-color: #555; /* Adjust based on your design */
-    margin: 10px 0; /* Some spacing */
     border-radius: 12px;
     position: relative;
 }
@@ -484,6 +770,14 @@ body {
     background: transparent;
     cursor: pointer;
     height: 2px;
+}
+
+.seeker::-webkit-slider-runnable-track {
+    margin-left: -6.5px; /* half the thumb width */
+}
+
+.seeker::-moz-range-track {
+    margin-left: -6.5px; /* half the thumb width */
 }
 
 .seeker::-webkit-slider-thumb {
@@ -519,18 +813,50 @@ body {
     background-color: #3688DA;
     cursor: pointer;
     font-size: 18px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* added box-shadow to the transition */
+    padding-top: 3.75px;
+    padding-right: 5px;
+}
+
+.project-share-btn {
+    all: unset;
+    color: white;
+    font-size: 18px;
+    margin-right: 10px;
+    cursor: pointer;
+    height: 35px;
+    width: 35px;
+    text-align: center;
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+}
+
+.project-share-btn:hover {
+    background-color: #232323;
+}
+
+.project-play-btn:hover, .project-play-btn:focus {
+    box-shadow: 0 0 15px 5px rgba(54, 136, 218, 0.1); /* soft blue glow */
 }
 
 .project-play-btn:hover {
+    transform: scale(1.05); /* Adjust 1.2 as per your requirement */
     background-color: #4a9def;
-    transition: background-color 0.3s ease;
 }
 
 .controls {
     display: flex;
-    margin-top: 10px;
+    margin-top: 10px; /* This margin is relative to player-center now, adjust as needed */
     align-items: center;
     gap: 20px; /* Space between controls */
+}
+
+.expanded-controls {
+    display: flex;
+    margin-top: 50px; /* This margin is relative to player-center now, adjust as needed */
+    align-items: center;
+    gap: 50px; /* Space between controls */
+    font-size: 35px;
 }
 
 .menu-bar {
@@ -544,7 +870,7 @@ body {
 }
 
 .menu-button {
-    width: 80px; /* Width is 80% of the viewport width */
+    width: 60px; /* Width is 80% of the viewport width */
     height: 50px;
     position: relative; /* Required to position content inside */
 
@@ -565,6 +891,7 @@ body {
     /* visibility: hidden; */
     transition: opacity 0.2 ease-out;
     position: fixed;
+    z-index: 9999;
     top: 0;
     left: 0;
     width: 100%;
@@ -629,4 +956,17 @@ body {
 }
 .artist-name {
     font-size: 16px;
+}
+
+/* If the screen size is below 768px, show the icon and hide the text */
+@media only screen and (max-width: 767px) {
+    .player-center {
+        display: none;
+    }
+    .tab-icon {
+        display: inline-block;
+    }
+    .tab-text {
+        display: none;
+    }
 }

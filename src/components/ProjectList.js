@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import placeholder from '../gradient-placeholder.png';
 
-const ProjectList = ({ artist, onSelect }) => {
+const ProjectList = ({ artist, onSelect, onProjectsLoaded }) => {
     const [projects, setProjects] = useState([]);
 
     useEffect(() => {
@@ -10,7 +10,7 @@ const ProjectList = ({ artist, onSelect }) => {
                 const retrievedProjects = await artist.getSnapshotOfProjects();
                 setProjects(retrievedProjects);
                 if (retrievedProjects.length > 0) {
-                    onSelect(retrievedProjects[0])
+                    onProjectsLoaded(retrievedProjects);
                 }
             } catch (error) {
                 console.error("Error fetching projects:", error);

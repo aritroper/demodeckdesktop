@@ -27,52 +27,57 @@ class Project {
             .child("projects").child(this.id);
     }
 
-    static async getProjectById(artistId, projectId) {
-        const dbRef = firebase.database().ref("artists").child(artistId)
-            .child("projects").child(projectId);
-
-        const deletedDbRef = firebase.app("deletedData").database().ref("artists")
-            .child(artistId).child("projects").child(projectId);
-
-        let snapshot = await dbRef.once("value");
-        if (!snapshot.exists()) {
-            snapshot = await deletedDbRef.once("value");
+    async getLinkSharingPermission() {
+        try {
+            const linkSharingRef = this.getFirebaseRef().child("metadata").child("link sharing");
+            const snapshot = await linkSharingRef.once("value");
+        
+            if (!snapshot.exists()) {
+                return 0;
+            }
+        
+            const permissionVal = snapshot.child("permissions").val();
+            return permissionVal || 0; // Return 0 if the value is null or undefined
+        } catch (error) {
+            console.error("Error fetching link sharing permission:", error);
+            return 0; // or maybe throw the error if you want the caller to handle it
         }
+    }
 
-        if (!snapshot.exists()) {
-            // Project not found in either database
-            throw new Error("Project not found");
+    async updateLinkSharingPermission(permission) {
+        let permissionVal = 0;
+    
+        switch (permission) {
+            case "None":
+                permissionVal = 0;
+                break;
+            case "View":
+                permissionVal = 1;
+                break;
+            case "Edit":
+                permissionVal = 2;
+                break;
+            default:
+                return;
         }
+    
+        const data = {
+            "enabled": (permissionVal !== 0),
+            "permissions": permissionVal
+        };
+    
+        return this.getFirebaseRef().child("metadata").child("link sharing").update(data);
+    }
 
-        const project = snapshot.val();
-        const metadata = project.metadata;
-        const albumArtId = metadata["album art"];
+    generateSharableURL() {
+        const baseURL = "http://localhost:3000/project";
 
-        const artist = await Artist.getArtistById(artistId);
-
-        if (albumArtId != null) {
-            const albumArt = project.art[albumArtId];
-            const albumArtURL = albumArt.metadata["remote url"];
-            return new Project(
-                projectId,
-                this.id,
-                metadata.name,
-                albumArtURL,
-                metadata["track count"],
-                metadata["duration"],
-                artist
-            );
-        } else {
-            return new Project(
-                projectId,
-                this.id,
-                metadata.name,
-                null,
-                metadata["track count"],
-                metadata["duration"],
-                artist
-            );
-        }
+        // Convert the artistId and projectId to strings and then encode with Base64
+        const encodedArtistId = btoa(this.artist.id.toString());
+        const encodedProjectId = btoa(this.id.toString());
+        
+        const link = `${baseURL}?aid=${encodedArtistId}&pid=${encodedProjectId}`;
+        return link;
     }
 
     async getSnapshotOfTracks() {
@@ -117,6 +122,54 @@ class Project {
     
         const resolvedActivities = await Promise.all(activityPromises);
         return resolvedActivities.reverse();
+    }
+
+    static async getProjectById(artistId, projectId) {
+        const dbRef = firebase.database().ref("artists").child(artistId)
+            .child("projects").child(projectId);
+
+        const deletedDbRef = firebase.app("deletedData").database().ref("artists")
+            .child(artistId).child("projects").child(projectId);
+
+        let snapshot = await dbRef.once("value");
+        if (!snapshot.exists()) {
+            snapshot = await deletedDbRef.once("value");
+        }
+
+        if (!snapshot.exists()) {
+            // Project not found in either database
+            throw new Error("Project not found");
+        }
+
+        const project = snapshot.val();
+        const metadata = project.metadata;
+        const albumArtId = metadata["album art"];
+
+        const artist = await Artist.getArtistById(artistId);
+
+        if (albumArtId != null) {
+            const albumArt = project.art[albumArtId];
+            const albumArtURL = albumArt.metadata["remote url"];
+            return new Project(
+                projectId,
+                artist.id,
+                metadata.name,
+                albumArtURL,
+                metadata["track count"],
+                metadata["duration"],
+                artist
+            );
+        } else {
+            return new Project(
+                projectId,
+                artist.id,
+                metadata.name,
+                null,
+                metadata["track count"],
+                metadata["duration"],
+                artist
+            );
+        }
     }
 }
 

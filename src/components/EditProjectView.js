@@ -3,6 +3,8 @@ import TracksView from './EditProjectViewScreens/TracksView';
 import ArtView from './EditProjectViewScreens/ArtView';
 import LyricsView from './EditProjectViewScreens/LyricsView';
 import IdeasView from './EditProjectViewScreens/IdeasView';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faMusic, faFile, faImage, faMicrophone } from '@fortawesome/free-solid-svg-icons';
 
 const EditProjectView = ({ project, tracks, setTracks, currentTrack, setCurrentTrack }) => {
     const [selectedTab, setSelectedTab] = useState('tracks');
@@ -39,25 +41,32 @@ const EditProjectView = ({ project, tracks, setTracks, currentTrack, setCurrentT
                 className={selectedTab === 'tracks' ? 'active' : ''} 
                 onClick={() => setSelectedTab('tracks')}
               >
-              Tracks
+                <FontAwesomeIcon className="tab-icon" icon={faMusic}/>
+                <span className="tab-text">Tracks</span>
               </button>
-              <button 
-                className={selectedTab === 'lyrics' ? 'active' : ''} 
-                onClick={() => setSelectedTab('lyrics')}
-              >
-              Lyrics
-              </button>
+
               <button 
                 className={selectedTab === 'art' ? 'active' : ''} 
                 onClick={() => setSelectedTab('art')}
               >
-              Art
+                <FontAwesomeIcon className="tab-icon" icon={faImage}/>
+                <span className="tab-text">Art</span>  
               </button>
+
+              <button 
+                className={selectedTab === 'lyrics' ? 'active' : ''} 
+                onClick={() => setSelectedTab('lyrics')}
+              >
+                <FontAwesomeIcon className="tab-icon" icon={faFile}/>
+                <span className="tab-text">Lyrics</span>  
+              </button>
+
               <button 
                 className={selectedTab === 'ideas' ? 'active' : ''} 
                 onClick={() => setSelectedTab('ideas')}
               >
-              Ideas
+                <FontAwesomeIcon className="tab-icon" icon={faMicrophone}/>
+                <span className="tab-text">Ideas</span>  
               </button>
             </div>
             <div className="tab-content"> 
